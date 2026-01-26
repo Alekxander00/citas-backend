@@ -7,6 +7,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 require('dotenv').config();
 
+const corsOptions = {
+  origin: [
+    'http://localhost:3001',
+    'http://localhost:5173',  // Puerto default de Vite
+    'https://citas-backend-production-3949.up.railway.app'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
 app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
