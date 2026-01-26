@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TipoIdentificacion {
+  CEDULA_CIUDADANIA
+  CEDULA_EXTRANJERIA
+  CERTIFICADO_NACIDO_VIVO
+  PERMISO_ESPECIAL_PERMANENCIA
+  PERMISO_POR_PROTECCION_TEMPORAL
+  REGISTRO_CIVIL
+  TARJETA_IDENTIDAD
+}
+
+enum DiaSemana {
+  LUNES
+  MARTES
+  MIERCOLES
+  JUEVES
+  VIERNES
+  SABADO
+}
+
+enum Jornada {
+  MANANA
+  TARDE
+}
+
+model Especialidad {
+  codigo String  @id @unique
+  nombre String
+  citas  Cita[]
+}
+
+model Cita {
+  codigo_cita           String             @id @default(uuid()) @db.Uuid
+  tipo_identificacion   TipoIdentificacion
+  numero_identificacion String
+  telefono              String
+  especialidad_codigo   String
+  dia_semana            DiaSemana
+  jornada               Jornada
+  orden_pdf             Bytes
+  created_at            DateTime           @default(now())
+
+  especialidad Especialidad @relation(fields: [especialidad_codigo], references: [codigo])
+
+  @@map("citas")
+}
