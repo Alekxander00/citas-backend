@@ -1,19 +1,17 @@
 FROM node:18-alpine
 
-WORKDIR /app
+# Instala las dependencias del sistema requeridas por Prisma en Alpine (musl)
+RUN apk add --no-cache openssl
 
-# Copiar package.json e instalar dependencias
+WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 
-# Copiar el resto de la aplicación
+# Copiar esquema y generar cliente
+COPY prisma ./prisma/
+RUN npx prisma generate --no-engine
+
 COPY . .
 
-# Generar Prisma Client
-RUN npx prisma generate
-
-# Exponer puerto
 EXPOSE 3000
-
-# Comando de inicio
-CMD ["npm", "start"]
+CMD ["node", "src/server.js"]
