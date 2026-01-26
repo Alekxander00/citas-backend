@@ -1,23 +1,18 @@
 {
   "name": "agendamiento-backend",
   "version": "1.0.0",
-  "description": "API para sistema de agendamiento de citas médicas",
-  "main": "src/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "build": "npm run prisma:generate",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
-    "prisma:deploy": "prisma migrate deploy",
-    "prisma:seed": "node prisma/seed.js",
-    "prisma:studio": "prisma studio",
-    "postinstall": "prisma generate --no-engine" 
+    "debug": "node -r dotenv/config server.js"
   },
   "dependencies": {
     "@prisma/client": "5.10.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.6.1",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
     "multer": "^1.4.5-lts.1",
@@ -28,7 +23,6 @@
     "prisma": "5.10.2"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "node": ">=18.0.0"
   }
 }
