@@ -32,6 +32,15 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    service: 'citas-medicas-backend'
+  });
+});
+
 // Routes
 app.use('/api/especialidades', require('./routes/especialidades'));
 app.use('/api/citas', require('./routes/citas'));
