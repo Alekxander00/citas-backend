@@ -32,9 +32,12 @@ enum Jornada {
 }
 
 model Especialidad {
-  codigo String  @id @unique
-  nombre String
-  citas  Cita[]
+  codigo Int    @id @unique
+  nombre String @unique
+  
+  citas Cita[]
+  
+  @@map("especialidades")
 }
 
 model Cita {
@@ -42,13 +45,13 @@ model Cita {
   tipo_identificacion   TipoIdentificacion
   numero_identificacion String
   telefono              String
-  especialidad_codigo   String
+  especialidad_codigo   Int
   dia_semana            DiaSemana
   jornada               Jornada
-  orden_pdf             Bytes
+  orden_pdf             Bytes              // ← QUITAR @db.Bytea
   created_at            DateTime           @default(now())
-
-  especialidad Especialidad @relation(fields: [especialidad_codigo], references: [codigo])
-
+  
+  especialidad Especialidad @relation(fields: [especialidad_codigo], references: [codigo], onDelete: Cascade)
+  
   @@map("citas")
 }
