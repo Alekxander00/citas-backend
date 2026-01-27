@@ -8,19 +8,29 @@ const prisma = new PrismaClient();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
-  credentials: true
+  origin: function(origin, callback) {
+    // Permite solicitudes sin origen (como mobile apps o curl)
+    if (!origin) return callback(null, true);
+    
+    // Lista de orígenes permitidos
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5173', // Vite
+      'https://tu-frontend.railway.app', // Tu frontend en producción
+      // Agrega aquí cualquier otro origen que necesites
+    ];
+    
+    if (allowedOrigins.includes(origin) || origin.includes('localhost')) {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Origen no permitido por CORS'), false);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json({ limit: '16mb' }));
-
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    service: 'citas-medicas-backend'
-  });
-});
 
 // Routes
 app.use('/api/especialidades', require('./routes/especialidades'));
