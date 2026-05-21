@@ -67,18 +67,15 @@ router.post('/', upload.single('orden_pdf'), validarCita, async (req, res) => {
       });
     }
     
-    // Validar archivo
-    if (!req.file) {
-      return res.status(400).json({ 
-        error: 'El archivo PDF de orden/autorización es obligatorio' 
-      });
-    }
-    
-    // Validar tipo de archivo
-    if (req.file.mimetype !== 'application/pdf') {
-      return res.status(400).json({ 
-        error: 'Solo se permiten archivos PDF' 
-      });
+    // Validar archivo si es proporcionado
+    let pdfBuffer = Buffer.alloc(0);
+    if (req.file) {
+      if (req.file.mimetype !== 'application/pdf') {
+        return res.status(400).json({ 
+          error: 'Solo se permiten archivos PDF' 
+        });
+      }
+      pdfBuffer = req.file.buffer;
     }
     
     // Verificar que la especialidad existe
@@ -101,7 +98,7 @@ router.post('/', upload.single('orden_pdf'), validarCita, async (req, res) => {
         especialidad_codigo: parseInt(req.body.especialidad_codigo),
         dia_semana: req.body.dia_semana,
         jornada: req.body.jornada,
-        orden_pdf: req.file.buffer
+        orden_pdf: pdfBuffer
       },
       select: {
         codigo_cita: true,
@@ -149,9 +146,9 @@ router.get('/:codigo_cita/orden', async (req, res) => {
       select: { orden_pdf: true }
     });
     
-    if (!cita || !cita.orden_pdf) {
+    if (!cita || !cita.orden_pdf || cita.orden_pdf.length === 0) {
       return res.status(404).json({ 
-        error: 'Cita no encontrada o sin archivo PDF' 
+        error: 'Cita no encontrada o fue agendada sin adjuntar una orden médica en PDF' 
       });
     }
     
