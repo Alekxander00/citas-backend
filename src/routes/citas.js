@@ -133,6 +133,10 @@ router.post('/', upload.single('orden_pdf'), validarCita, async (req, res) => {
       }
     });
 
+    const fechaColombiaStr = cita.created_at
+      ? new Date(cita.created_at).toLocaleString('es-CO', { timeZone: 'America/Bogota' })
+      : null;
+
     res.status(201).json({
       success: true,
       message: 'Su solicitud de cita ha sido registrada correctamente. En los proximos dias sera contactado telefonicamente para confirmar la fecha y hora exactas de su cita.',
@@ -145,7 +149,8 @@ router.post('/', upload.single('orden_pdf'), validarCita, async (req, res) => {
         motivo_consulta: cita.motivo_consulta,
         dia_semana: cita.dia_semana,
         jornada: cita.jornada,
-        fecha_solicitud: cita.created_at
+        fecha_solicitud: cita.created_at,
+        fecha_solicitud_colombia: fechaColombiaStr
       }
     });
   } catch (error) {

@@ -1,4 +1,6 @@
 require('dotenv').config();
+process.env.TZ = 'America/Bogota';
+
 const express = require('express');
 const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
@@ -34,9 +36,14 @@ app.use(cors({
 
 // Health check
 app.get('/health', (req, res) => {
+  const fechaActual = new Date();
+  const horaColombia = fechaActual.toLocaleString('es-CO', { timeZone: 'America/Bogota' });
+
   res.json({ 
     status: 'OK', 
-    timestamp: new Date().toISOString(),
+    timestamp: fechaActual.toISOString(),
+    hora_colombia: horaColombia,
+    zona_horaria: 'America/Bogota (Tunja, Boyacá)',
     service: 'citas-medicas-backend'
   });
 });
