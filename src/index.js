@@ -43,6 +43,7 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/especialidades', require('./routes/especialidades'));
+app.use('/api/disponibilidad', require('./routes/disponibilidad'));
 app.use('/api/citas', require('./routes/citas'));
 
 // Error handling middleware

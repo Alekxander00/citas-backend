@@ -24,6 +24,7 @@ enum DiaSemana {
   JUEVES
   VIERNES
   SABADO
+  DOMINGO
 }
 
 enum Jornada {
@@ -34,6 +35,7 @@ enum Jornada {
 model Especialidad {
   codigo Int    @id @unique
   nombre String @unique
+  icono  String @default("FaStethoscope")
   
   citas Cita[]
   
@@ -46,6 +48,7 @@ model Cita {
   numero_identificacion String
   telefono              String
   especialidad_codigo   Int
+  motivo_consulta       String?            @db.Text
   dia_semana            DiaSemana
   jornada               Jornada
   orden_pdf             Bytes              // ← QUITAR @db.Bytea
@@ -54,4 +57,14 @@ model Cita {
   especialidad Especialidad @relation(fields: [especialidad_codigo], references: [codigo], onDelete: Cascade)
   
   @@map("citas")
+}
+
+model DiaHabil {
+  dia_semana      DiaSemana @id
+  habilitado      Boolean   @default(true)
+  mensaje_inhabil String?   @db.Text
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  @@map("dias_habiles")
 }
