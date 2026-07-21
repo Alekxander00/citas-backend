@@ -109,6 +109,23 @@ router.post('/', upload.single('orden_pdf'), validarCita, async (req, res) => {
       });
     }
 
+    function getFechaHoraColombia() {
+      const now = new Date();
+      const bogotaString = now.toLocaleString('en-US', { timeZone: 'America/Bogota' });
+      const bogotaDate = new Date(bogotaString);
+      return new Date(Date.UTC(
+        bogotaDate.getFullYear(),
+        bogotaDate.getMonth(),
+        bogotaDate.getDate(),
+        bogotaDate.getHours(),
+        bogotaDate.getMinutes(),
+        bogotaDate.getSeconds(),
+        bogotaDate.getMilliseconds()
+      ));
+    }
+
+    const fechaColombia = getFechaHoraColombia();
+
     const cita = await prisma.cita.create({
       data: {
         tipo_identificacion: req.body.tipo_identificacion,
@@ -118,7 +135,8 @@ router.post('/', upload.single('orden_pdf'), validarCita, async (req, res) => {
         motivo_consulta: req.body.motivo_consulta?.trim() || null,
         dia_semana: req.body.dia_semana,
         jornada: req.body.jornada,
-        orden_pdf: pdfBuffer
+        orden_pdf: pdfBuffer,
+        created_at: fechaColombia
       },
       select: {
         codigo_cita: true,
