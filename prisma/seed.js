@@ -61,6 +61,20 @@ async function main() {
     console.log(`  - ${dia.dia_semana} - ${dia.habilitado ? 'habilitado' : 'inhabilitado'}`);
   }
 
+  console.log('Configurando estado global del modulo de citas...');
+
+  await prisma.configuracionModuloCitas.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      activo: true,
+      mensaje_inactivo: 'El modulo de citas no esta disponible en este momento. Intente nuevamente mas tarde.'
+    }
+  });
+
+  console.log('  - modulo de citas activo');
+
   console.log('Seed completado exitosamente!');
 }
 

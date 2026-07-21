@@ -68,3 +68,13 @@ model DiaHabil {
 
   @@map("dias_habiles")
 }
+
+model ConfiguracionModuloCitas {
+  id               Int      @id @default(1)
+  activo           Boolean  @default(true)
+  mensaje_inactivo String?  @db.Text
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("configuracion_modulo_citas")
+}

@@ -18,58 +18,33 @@ const DIAS_ORDEN = [
   'DOMINGO'
 ];
 
-const WEEKDAY_TO_DIA_SEMANA = {
-  Monday: 'LUNES',
-  Tuesday: 'MARTES',
-  Wednesday: 'MIERCOLES',
-  Thursday: 'JUEVES',
-  Friday: 'VIERNES',
-  Saturday: 'SABADO',
-  Sunday: 'DOMINGO'
-};
-
-const DEFAULT_TIME_ZONE = process.env.APP_TIME_ZONE || 'America/Bogota';
-
-function getDiaSemanaActual(fecha = new Date(), timeZone = DEFAULT_TIME_ZONE) {
-  const weekday = new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    timeZone
-  }).format(fecha);
-
-  return WEEKDAY_TO_DIA_SEMANA[weekday];
-}
-
-function getMensajeInhabil(diaSemana, mensajeInhabil) {
+function getMensajeModuloInactivo(mensajeInactivo) {
   return (
-    mensajeInhabil ||
-    `El modulo de citas no esta habilitado hoy ${DIA_LABELS[diaSemana]}. Intente nuevamente en un dia habil.`
+    mensajeInactivo ||
+    'El modulo de citas no esta disponible en este momento. Intente nuevamente mas tarde.'
   );
 }
 
-async function obtenerEstadoModuloCitas(prisma, fecha = new Date()) {
-  const diaSemana = getDiaSemanaActual(fecha);
-
-  const diaHabil = await prisma.diaHabil.findUnique({
-    where: { dia_semana: diaSemana }
+async function obtenerEstadoModuloCitas(prisma) {
+  const configuracion = await prisma.configuracionModuloCitas.findUnique({
+    where: { id: 1 }
   });
 
-  if (!diaHabil) {
+  if (!configuracion) {
     return {
-      dia_semana: diaSemana,
-      nombre_dia: DIA_LABELS[diaSemana],
-      habilitado: false,
-      mensaje: getMensajeInhabil(diaSemana)
+      habilitado: true,
+      mensaje: 'El modulo de citas esta habilitado.',
+      updated_at: null
     };
   }
 
   return {
-    dia_semana: diaHabil.dia_semana,
-    nombre_dia: DIA_LABELS[diaHabil.dia_semana],
-    habilitado: diaHabil.habilitado,
-    mensaje: diaHabil.habilitado
+    habilitado: configuracion.activo,
+    activo: configuracion.activo,
+    mensaje: configuracion.activo
       ? 'El modulo de citas esta habilitado.'
-      : getMensajeInhabil(diaHabil.dia_semana, diaHabil.mensaje_inhabil),
-    updated_at: diaHabil.updated_at
+      : getMensajeModuloInactivo(configuracion.mensaje_inactivo),
+    updated_at: configuracion.updated_at
   };
 }
 
@@ -86,7 +61,6 @@ function formatearDiaHabil(diaHabil) {
 module.exports = {
   DIA_LABELS,
   DIAS_ORDEN,
-  getDiaSemanaActual,
   obtenerEstadoModuloCitas,
   formatearDiaHabil
 };
